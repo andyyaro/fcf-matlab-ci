@@ -31,7 +31,8 @@ function profiles = makeSessionProfiles(scenarioRow, varargin)
 %                        (default 42). Recorded in the output for
 %                        reproducibility.
 %     'ChargerEfficiency' - grid-to-battery efficiency in (0,1],
-%                        default 0.93. energy_per_session_kWh is treated
+%                        default 0.92, matching src/fcf_m2/config.py
+%                        CHARGER_EFFICIENCY. energy_per_session_kWh is treated
 %                        as battery-side energy; grid-side draw is
 %                        power/efficiency-adjusted.
 %     'DiversityFactor'   - scalar in (0,1] applied to the aggregate EV
@@ -70,7 +71,19 @@ function profiles = makeSessionProfiles(scenarioRow, varargin)
     addParameter(p, "ArrivalDistribution", "uniform", ...
         @(v) ismember(string(v), ["uniform", "triangular"]));
     addParameter(p, "Seed", 42, @(v) isnumeric(v) && isscalar(v) && v >= 0);
-    addParameter(p, "ChargerEfficiency", 0.93, ...
+    % 0.92, NOT 0.93. This was 0.93 while src/fcf_m2/config.py has always said
+    % CHARGER_EFFICIENCY = 0.92 -- the same physical assumption carrying two different
+    % values in the two halves of one model. Found by running the pipeline on the canonical
+    % data and reconciling against the contract: every energy figure came out 1/0.93 of the
+    % contract's, and the implied efficiency measured 0.9300 across all 120 rows.
+    %
+    % It survived because charger efficiency is not a contract field, so there was nothing
+    % to reconcile it against -- which is precisely the class of drift the canonical contract
+    % exists to prevent, hiding in the one quantity the contract does not carry.
+    %
+    % Python is the single producer (see data/contract/v1/README.md), so MATLAB follows it.
+    % tests/test_cross_model_constants.py fails if these two ever disagree again.
+    addParameter(p, "ChargerEfficiency", 0.92, ...
         @(v) isnumeric(v) && isscalar(v) && v > 0 && v <= 1);
     addParameter(p, "DiversityFactor", 1.0, ...
         @(v) isnumeric(v) && isscalar(v) && v > 0 && v <= 1);

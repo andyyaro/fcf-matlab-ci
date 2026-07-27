@@ -1,7 +1,7 @@
 {
-  "generated_utc": "2026-07-27T19:18:56.790039+00:00",
+  "generated_utc": "2026-07-27T19:28:03.677474+00:00",
   "source_repository": "private (source of truth)",
-  "source_commit": "5f8b76222baff1416d2d642f7a870d1caad4a387",
+  "source_commit": "b857b40ee44c76ebc406f2e5c634daa2695103af",
   "direction": "private -> public, one-directional. Never the reverse.",
   "files": {
     "data/harness_scenarios_synthetic.csv": {
@@ -18,7 +18,7 @@
     },
     "src/electricalEconomics.m": {
       "source": "matlab/src/electricalEconomics.m",
-      "sha256": "812ed5b27351163e7ab0876439729e5e224b37a12ec6a09ccc46bc71580a3942"
+      "sha256": "6823f6a5487f277d5272d4efe1ede096a3cf552415e7cf24620e1b7304d83736"
     },
     "src/loadScenarios.m": {
       "source": "matlab/src/loadScenarios.m",
@@ -26,7 +26,7 @@
     },
     "src/makeSessionProfiles.m": {
       "source": "matlab/src/makeSessionProfiles.m",
-      "sha256": "404d95edfa189061092a7b4e655b9e4a69dfbef4b5eb7fa01ab44f58c30167db"
+      "sha256": "61f9a926857e9e9aef46def3c52b5c296295707139f158c31da2c393ef4d908c"
     },
     "src/managedCharging.m": {
       "source": "matlab/src/managedCharging.m",
@@ -42,7 +42,7 @@
     },
     "src/runScenario.m": {
       "source": "matlab/src/runScenario.m",
-      "sha256": "7f7dc58bded95a016b42636f50d13b859f1ae51e35ad5f18ceb5eb80fcd37b38"
+      "sha256": "6e960fb2830b081fc7a3a251976934a7da20bbe588e9d44cafbad4f12c6ccd4a"
     },
     "src/run_all_scenarios.m": {
       "source": "matlab/src/run_all_scenarios.m",
@@ -70,7 +70,7 @@
     },
     "tests/test_profiles.m": {
       "source": "matlab/tests/test_profiles.m",
-      "sha256": "b0c26ffc8c1baed9c91dfd769df273010181156b0a2c5a64abdf8858d4f768d0"
+      "sha256": "acf443c9ae79107a7d8252364af12df02f3e0baee30d053699bfa929ae7f7cd3"
     },
     "tests/test_regression.m": {
       "source": "matlab/tests/test_regression.m",

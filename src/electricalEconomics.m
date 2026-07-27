@@ -20,7 +20,8 @@ function econ = electricalEconomics(resultUnmanaged, resultManaged, varargin)
 %     'PowerFactor'          - scalar in (0,1], default 0.95. kVA =
 %                              kW / power factor.
 %     'ChargerEfficiency'    - echo of the efficiency used upstream,
-%                              default 0.93 (reporting only).
+%                              default 0.92 (reporting only), matching
+%                              src/fcf_m2/config.py CHARGER_EFFICIENCY.
 %     'ServiceCapacity_kW'   - transformer/service limit for the
 %                              constraint check. Default NaN -> check
 %                              reported as "service_capacity_unknown".
@@ -53,7 +54,9 @@ function econ = electricalEconomics(resultUnmanaged, resultManaged, varargin)
     p.FunctionName = "electricalEconomics";
     addParameter(p, "PowerFactor", 0.95, ...
         @(v) isnumeric(v) && isscalar(v) && v > 0 && v <= 1);
-    addParameter(p, "ChargerEfficiency", 0.93, ...
+    % 0.92 to match src/fcf_m2/config.py. See makeSessionProfiles.m for why this
+    % was 0.93 and how the disagreement was found.
+    addParameter(p, "ChargerEfficiency", 0.92, ...
         @(v) isnumeric(v) && isscalar(v) && v > 0 && v <= 1);
     addParameter(p, "ServiceCapacity_kW", NaN, ...
         @(v) isnumeric(v) && isscalar(v));

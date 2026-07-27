@@ -20,7 +20,8 @@ function out = runScenario(scenarioRow, varargin)
 %     'ProfileMode'          - forwarded to makeSessionProfiles 'Mode'
 %                              (default "deterministic_sessions").
 %     'Seed'                 - stochastic seed (default 42).
-%     'ChargerEfficiency'    - default 0.93.
+%     'ChargerEfficiency'    - default 0.92, matching src/fcf_m2/config.py
+%                              CHARGER_EFFICIENCY.
 %     'DiversityFactor'      - default 1.0.
 %     'Tariff'               - optional tariff struct (see
 %                              electricalEconomics).
@@ -51,7 +52,9 @@ function out = runScenario(scenarioRow, varargin)
         @(v) ismember(string(v), ["deterministic_sessions", ...
             "stochastic", "legacy_gaussian"]));
     addParameter(p, "Seed", 42, @(v) isnumeric(v) && isscalar(v));
-    addParameter(p, "ChargerEfficiency", 0.93, ...
+    % 0.92 to match src/fcf_m2/config.py CHARGER_EFFICIENCY. See makeSessionProfiles.m
+    % for how the 0.92/0.93 disagreement was found.
+    addParameter(p, "ChargerEfficiency", 0.92, ...
         @(v) isnumeric(v) && isscalar(v) && v > 0 && v <= 1);
     addParameter(p, "DiversityFactor", 1.0, ...
         @(v) isnumeric(v) && isscalar(v) && v > 0 && v <= 1);

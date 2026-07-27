@@ -60,6 +60,9 @@ function testEnergyConservationDeterministic(testCase)
     % integral of the request equals sessions_per_day x per-session
     % deliverable grid energy.
     row = testCase.TestData.baseRow;
+    % Deliberately NOT the 0.92 default. Passing a non-default value is what proves the
+    % parameter is honoured rather than silently ignored -- a test that passes the default
+    % would still pass if the argument were dropped on the floor.
     eta = 0.93;
     p = makeSessionProfiles(row, "ChargerEfficiency", eta);
 
