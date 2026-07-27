@@ -52,7 +52,29 @@ function modelPath = buildSimulinkModel(out, varargin)
     % ---------------------------------------------------------------
     % Simulink availability check - the pipeline must not depend on it
     % ---------------------------------------------------------------
-    if exist("new_system", "file") ~= 2 || ~license("test", "Simulink")
+    % This test was wrong from the day it was written, and it failed CLOSED, so it
+    % looked like caution rather than a defect. It asked
+    %
+    %     exist("new_system", "file") ~= 2
+    %
+    % but new_system is a Simulink BUILT-IN, and exist(name,"file") does not report a
+    % built-in. On a runner with Simulink genuinely installed, MATLAB R2025b Update 5
+    % answered (CI run 30296162570, and asked rather than assumed):
+    %
+    %     exist(new_system)           = 5      <- built-in
+    %     exist(new_system,"file")    = 0      <- the guard demanded 2, so it can never pass
+    %     exist(new_system,"builtin") = 5
+    %     license test Simulink       = 1
+    %     ver(simulink)               = Simulink 25.2
+    %     new_system probe            = OK, a model can be created
+    %
+    % So the Simulink layer has never been reachable on ANY installation, and the
+    % "Simulink is not available" message below has never once been true when printed.
+    % ver() is used now because it answers the question actually being asked -- is the
+    % product installed -- and the license test is kept because installed and licensed
+    % are two different facts.
+    simulinkAvailable = ~isempty(ver("simulink")) && license("test", "Simulink");
+    if ~simulinkAvailable
         error("buildSimulinkModel:simulinkUnavailable", ...
             "Simulink is not available in this MATLAB installation. " + ...
             "This layer is OPTIONAL and illustrative only - all " + ...
