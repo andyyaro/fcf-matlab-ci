@@ -1,0 +1,146 @@
+name: matlab
+
+# Executes the model on real MathWorks MATLAB. Public repositories are licensed
+# automatically for all products except transformation products (Coder, Compiler),
+# which this model does not use.
+#
+# Until this workflow runs green, the upstream project's EXECUTION_STATUS.md records
+# that not one line of this code has ever been executed. That document may only be
+# updated from a real run recorded here.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  matlab:
+    name: MATLAB unittest + batch + Simulink
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v2
+        with:
+          release: R2025b
+          products: Simulink
+
+      - name: Record provenance before anything runs
+        # Every artifact has to be attributable to an engine, a release, a commit and a
+        # time. Writing this first means it exists even if a later step fails.
+        run: |
+          mkdir -p provenance
+          {
+            echo "engine: MathWorks MATLAB"
+            echo "release_requested: R2025b"
+            echo "repository: ${GITHUB_REPOSITORY}"
+            echo "commit_sha: ${GITHUB_SHA}"
+            echo "run_id: ${GITHUB_RUN_ID}"
+            echo "run_number: ${GITHUB_RUN_NUMBER}"
+            echo "generated_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "input_csv: harness_scenarios_synthetic.csv"
+            echo "input_sha256: $(sha256sum data/harness_scenarios_synthetic.csv | cut -d' ' -f1)"
+            echo "note: the input is SYNTHETIC. No row corresponds to any real facility."
+          } > provenance/run_provenance.txt
+          cat provenance/run_provenance.txt
+
+      - name: Confirm the actual MATLAB release
+        # The requested release and the delivered one are not the same claim.
+        uses: matlab-actions/run-command@v2
+        with:
+          command: |
+            fid = fopen('provenance/matlab_version.txt','w');
+            fprintf(fid, 'version: %s\nrelease: %s\n', version(), version('-release'));
+            fprintf(fid, 'simulink_licensed: %d\n', license('test','Simulink'));
+            fclose(fid);
+            type('provenance/matlab_version.txt');
+
+      - name: Run the unittest suite
+        # continue-on-error so that a test failure still yields the golden file and the
+        # logs. The job is failed explicitly at the end instead.
+        id: tests
+        continue-on-error: true
+        uses: matlab-actions/run-tests@v2
+        with:
+          source-folder: src
+          select-by-folder: tests
+          test-results-junit: results/junit.xml
+          code-coverage-cobertura: results/coverage.xml
+
+      - name: Batch run over every scenario
+        id: batch
+        continue-on-error: true
+        uses: matlab-actions/run-command@v2
+        with:
+          command: |
+            addpath('src');
+            outDir = run_all_scenarios('CsvFile', ...
+                fullfile(pwd,'data','harness_scenarios_synthetic.csv'), ...
+                'OutputRoot', fullfile(pwd,'outputs'));
+            fprintf('batch output: %s\n', outDir);
+
+      - name: Build the Simulink model and its figures
+        # Explicitly allowed to fail. buildSimulinkModel is illustrative, not
+        # load-bearing: every metric comes from the base-MATLAB pipeline. A Simulink
+        # problem must not cost us the unittest results or the golden file.
+        id: simulink
+        continue-on-error: true
+        uses: matlab-actions/run-command@v2
+        with:
+          command: |
+            addpath('src');
+            T = loadScenarios(fullfile(pwd,'data','harness_scenarios_synthetic.csv'));
+            out = runScenario(T(1,:), 'GuardMode','planning_illustration', ...
+                              'AssumedSiteCapacity_kW', 200);
+            modelPath = buildSimulinkModel(out, 'ModelFolder', fullfile(pwd,'simulink'));
+            fprintf('slx: %s\n', modelPath);
+            plotScenario(out, 'OutputFolder', fullfile(pwd,'figures'), ...
+                         'SaveFigure', true, 'Visible', false, ...
+                         'SourceFile', 'harness_scenarios_synthetic.csv');
+
+      - name: Collect the golden regression baseline
+        # THE POINT OF THIS WORKFLOW. test_regression writes
+        # tests/golden/regression_golden.csv on its first run and passes against it --
+        # the file the upstream EXECUTION_STATUS.md says only a real run can create.
+        # It is gitignored here, so without this upload it would be created inside the
+        # runner and thrown away.
+        if: always()
+        run: |
+          mkdir -p artifacts
+          cp -r provenance artifacts/ 2>/dev/null || true
+          if [ -f tests/golden/regression_golden.csv ]; then
+            cp tests/golden/regression_golden.csv artifacts/
+            echo "golden regression baseline captured:"
+            cat artifacts/regression_golden.csv
+          else
+            echo "NO GOLDEN FILE PRODUCED - the regression test did not reach the write step."
+          fi
+          cp -r results artifacts/ 2>/dev/null || true
+          cp -r outputs artifacts/ 2>/dev/null || true
+          cp -r simulink artifacts/ 2>/dev/null || true
+          cp -r figures artifacts/ 2>/dev/null || true
+          find artifacts -type f | sort
+
+      - name: Upload every artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: matlab-run-${{ github.run_number }}
+          path: artifacts/
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Fail the job if the tests or the batch failed
+        # Simulink is deliberately excluded: it is illustrative by design.
+        if: steps.tests.outcome == 'failure' || steps.batch.outcome == 'failure'
+        run: |
+          echo "tests: ${{ steps.tests.outcome }}"
+          echo "batch: ${{ steps.batch.outcome }}"
+          echo "simulink (not gating): ${{ steps.simulink.outcome }}"
+          exit 1
