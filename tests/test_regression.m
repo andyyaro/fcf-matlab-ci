@@ -23,8 +23,7 @@ function setupOnce(testCase)
     thisDir = fileparts(mfilename("fullpath"));
     repoRoot = fileparts(thisDir);
     addpath(fullfile(repoRoot, "src"));
-    testCase.TestData.csvFile = fullfile(repoRoot, "data", ...
-        "canonical", "matlab_scenarios.csv");
+    testCase.TestData.csvFile = resolveScenarioCsv();
     testCase.TestData.goldenFile = fullfile(thisDir, "golden", ...
         "regression_golden.csv");
     testCase.TestData.seed = 42;                 % fixed forever

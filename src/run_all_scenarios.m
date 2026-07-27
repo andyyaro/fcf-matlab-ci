@@ -24,8 +24,10 @@ function outDir = run_all_scenarios(varargin)
 %   artifacts are produced (see plotScenario.m) - ML-12.
 %
 %   Name-value options:
-%     'CsvFile'     - scenario CSV path. Default:
-%                     <repo>/data/canonical/matlab_scenarios.csv
+%     'CsvFile'     - scenario CSV path. Default: resolveScenarioCsv(), which
+%                     finds the canonical adapter CSV in the private repository
+%                     and the synthetic fixture in the public CI harness, so the
+%                     same sources run unmodified in both.
 %     'OutputRoot'  - default <repo>/outputs
 %     'ProfileMode' - forwarded to runScenario (default
 %                     "deterministic_sessions")
@@ -42,8 +44,7 @@ function outDir = run_all_scenarios(varargin)
 
     p = inputParser;
     p.FunctionName = "run_all_scenarios";
-    addParameter(p, "CsvFile", fullfile(repoRoot, "data", ...
-        "canonical", "matlab_scenarios.csv"), ...
+    addParameter(p, "CsvFile", resolveScenarioCsv(), ...
         @(v) ischar(v) || isstring(v));
     addParameter(p, "OutputRoot", fullfile(repoRoot, "outputs"), ...
         @(v) ischar(v) || isstring(v));
