@@ -44,7 +44,14 @@ function outDir = run_all_scenarios(varargin)
 
     p = inputParser;
     p.FunctionName = "run_all_scenarios";
-    addParameter(p, "CsvFile", resolveScenarioCsv(), ...
+    % Default is a sentinel, resolved AFTER parsing rather than here.
+    %
+    % addParameter(p, "CsvFile", resolveScenarioCsv(), ...) evaluates the resolver eagerly,
+    % every call, even when the caller supplies an explicit path -- so in any tree without a
+    % default CSV this function errored before it ever looked at the path it was given.
+    % Found while running the model under Octave from a transformed source tree, where no
+    % data directory exists at all: the run died on the default it was never going to use.
+    addParameter(p, "CsvFile", "", ...
         @(v) ischar(v) || isstring(v));
     addParameter(p, "OutputRoot", fullfile(repoRoot, "outputs"), ...
         @(v) ischar(v) || isstring(v));
@@ -74,6 +81,9 @@ function outDir = run_all_scenarios(varargin)
     % ---------------------------------------------------------------
     % Load all scenarios (horizons/cases come from the data - ML-06)
     % ---------------------------------------------------------------
+    if strlength(string(opt.CsvFile)) == 0
+        opt.CsvFile = resolveScenarioCsv();
+    end
     T = loadScenarios(opt.CsvFile);
     nRows = height(T);
     fprintf("run_all_scenarios: %d scenario rows loaded from %s\n", ...

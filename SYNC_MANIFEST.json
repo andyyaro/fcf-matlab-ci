@@ -1,7 +1,7 @@
 {
-  "generated_utc": "2026-07-27T19:11:43.905776+00:00",
+  "generated_utc": "2026-07-27T19:18:56.790039+00:00",
   "source_repository": "private (source of truth)",
-  "source_commit": "19d509ec4f2fdc36196f2f708eb9db76670bb7d9",
+  "source_commit": "5f8b76222baff1416d2d642f7a870d1caad4a387",
   "direction": "private -> public, one-directional. Never the reverse.",
   "files": {
     "data/harness_scenarios_synthetic.csv": {
@@ -46,7 +46,7 @@
     },
     "src/run_all_scenarios.m": {
       "source": "matlab/src/run_all_scenarios.m",
-      "sha256": "28aae1352213d726cc7aefceaa8a08c5e972d4d865a168936119b133e19a4be4"
+      "sha256": "218aecdb620e6464017c7a8231ac8a242530f7c653b78fbcf44d4c5b65173597"
     },
     "src/scenarioImportOptions.m": {
       "source": "matlab/src/scenarioImportOptions.m",
