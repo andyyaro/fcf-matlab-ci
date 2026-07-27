@@ -68,8 +68,7 @@ end
 function testArbitraryNewHorizonRowRuns(testCase)
     % Append a 2070 row (a horizon that exists nowhere in the code) to a
     % copy of the CSV; loading and running it must need no script edits.
-    opts = detectImportOptions(testCase.TestData.csvFile, ...
-        "TextType", "string", "VariableNamingRule", "preserve");
+    opts = scenarioImportOptions(testCase.TestData.csvFile);
     T = readtable(testCase.TestData.csvFile, opts);
 
     newRow = T(1, :);

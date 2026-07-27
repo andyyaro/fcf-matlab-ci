@@ -27,7 +27,20 @@ function setupOnce(testCase)
     testCase.TestData.goldenFile = fullfile(thisDir, "golden", ...
         "regression_golden.csv");
     testCase.TestData.seed = 42;                 % fixed forever
-    testCase.TestData.assumedCap_kW = 200;       % fixed planning cap
+    % Fixed planning capacity for the panel. It was 200 kW, and the first real
+    % MathWorks run showed why that was wrong: at 200 the cap never binds, so
+    % curtailed_clamp_kWh and unmet_energy_aware_kWh came back identically zero
+    % and peak_clamp_kW equalled peak_unmanaged_kW on every row. Four of the seven
+    % golden columns carried no information, and a regression baseline that cannot
+    % tell the managed strategies apart from the unmanaged one would not detect a
+    % regression in them.
+    %
+    % 100 kW binds in both trees, which matters because this test runs against the
+    % real canonical CSV here and against a synthetic fixture in the public harness:
+    % 10 of 20 panel rows curtail on the canonical data and 20 of 20 on the harness
+    % fixture. A mix is better than all-or-nothing - it exercises the bound and the
+    % unbound path in one panel.
+    testCase.TestData.assumedCap_kW = 100;       % binds; see note above
     testCase.TestData.relTol = 1e-6;             % deterministic panel
 end
 

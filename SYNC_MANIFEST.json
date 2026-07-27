@@ -1,12 +1,12 @@
 {
-  "generated_utc": "2026-07-27T17:39:02.202921+00:00",
+  "generated_utc": "2026-07-27T17:51:10.226475+00:00",
   "source_repository": "private (source of truth)",
-  "source_commit": "0cb0545d325ea414d7a037bede8639a3150daaf7",
+  "source_commit": "c489be1a0e1b62eba7e1db9242af58f71c7afe8b",
   "direction": "private -> public, one-directional. Never the reverse.",
   "files": {
     "data/harness_scenarios_synthetic.csv": {
       "source": "matlab/data/harness/harness_scenarios_synthetic.csv",
-      "sha256": "bfe442c09ba79d17429b92d57ea042b031617132a9a5721e1adb24301d41b282"
+      "sha256": "8e869e112e6cf201ed5ead2d8aa86d2408d2daa70a85aafb5c121cbe63b99220"
     },
     "src/buildSimulinkModel.m": {
       "source": "matlab/src/buildSimulinkModel.m",
@@ -22,7 +22,7 @@
     },
     "src/loadScenarios.m": {
       "source": "matlab/src/loadScenarios.m",
-      "sha256": "035b231e7fe7e7ac6c8f961c8d7b861e17eec57ceecc4350f59feea09720640b"
+      "sha256": "98c9cf4a1b103836bf5899d118bc74f0c6d1232b5889ac79135a46c664d5cb76"
     },
     "src/makeSessionProfiles.m": {
       "source": "matlab/src/makeSessionProfiles.m",
@@ -48,21 +48,25 @@
       "source": "matlab/src/run_all_scenarios.m",
       "sha256": "28aae1352213d726cc7aefceaa8a08c5e972d4d865a168936119b133e19a4be4"
     },
+    "src/scenarioImportOptions.m": {
+      "source": "matlab/src/scenarioImportOptions.m",
+      "sha256": "ebf5d4943aeb617cf93c799bd8a35b78cb5b5f0f022c4619897a8821d7c362ff"
+    },
     "tests/test_capacityGuard.m": {
       "source": "matlab/tests/test_capacityGuard.m",
       "sha256": "79daaba69cd6289321aa51c92876bc1969a9a624dac532da4633fce2af6cb57a"
     },
     "tests/test_horizons.m": {
       "source": "matlab/tests/test_horizons.m",
-      "sha256": "8638bd0cff403ce5e7d40119bebd50c96bf3df9d85fa0d60245f1d8d813282f6"
+      "sha256": "a01fa9463a015967148c702827f707bd5a7d4c550535874e9ecc7361192668cf"
     },
     "tests/test_loadScenarios.m": {
       "source": "matlab/tests/test_loadScenarios.m",
-      "sha256": "acd8550d3aef7390dc17aa323ec670f5316983f3e340ea067e502ddaefa1833a"
+      "sha256": "611f8b7de413f14fca6878facf77797a99e3c15d8dbbe7597e4d399aecc0437e"
     },
     "tests/test_managedCharging.m": {
       "source": "matlab/tests/test_managedCharging.m",
-      "sha256": "d3fd4121782dd4b1da175bdd6dc6b25312298b1364a0bd922e26d2c32d5d15e4"
+      "sha256": "f080f630f9378a84db914ca855b54c6601aca7309d8e96f5ff43efafefb164ad"
     },
     "tests/test_profiles.m": {
       "source": "matlab/tests/test_profiles.m",
@@ -70,7 +74,7 @@
     },
     "tests/test_regression.m": {
       "source": "matlab/tests/test_regression.m",
-      "sha256": "0dc46dd11f00d62837ce5fa654926add6bb6109870797e939aa9cc48e6b6821f"
+      "sha256": "1fa64e66ad57bd835a390a7c4e03e6f0e35bd26dcca2c50a96708d9fb823becb"
     }
   }
 }

@@ -83,14 +83,29 @@ end
 function testDeferredIsNotCurtailed(testCase)
     % Moderately tight cap: the scheduler defers energy (recovered later)
     % rather than curtailing it. Deferred > 0 while curtailed == 0.
+    %
+    % The cap was 95 kW, and the first real MathWorks run showed that assertion
+    % failing with deferred == 0. The model was right and the test was wrong:
+    % this row's peak TOTAL request is 91.02 kW, so a 95 kW cap never binds and
+    % there is nothing to defer.
+    %
+    % 95 was chosen under the LEGACY peak assumption, where the request peaked at
+    % ports x charger_kW = 6 x 19.2 = 115.2 kW regardless of demand. That is
+    % hypothesis H2, and replacing it is the whole point of the session-based V3
+    % model - the peak now reflects sessions and energy, not simultaneous maximum.
+    % The assumption survived here in a test that had never been executed.
+    %
+    % 85 kW binds against the real 91.02 kW peak (deferred 15.99 kWh, unmet 0,
+    % clamp curtails 16.14 kWh) while staying above the 70 kW base peak so the
+    % scheduler still has headroom to allocate.
     prof = makeSessionProfiles(testCase.TestData.row);
-    r = managedCharging(prof, "energy_aware", "SiteCapacity_kW", 95);
+    r = managedCharging(prof, "energy_aware", "SiteCapacity_kW", 85);
     verifyEqual(testCase, r.curtailed_kWh, 0, ...
         "energy_aware never curtails; it defers or reports unmet.");
     verifyGreaterThan(testCase, r.deferred_kWh, 0, ...
         "A binding cap must show deferral relative to the request.");
     % Clamp on the same profiles curtails instead.
-    rc = managedCharging(prof, "clamp", "SiteCapacity_kW", 95);
+    rc = managedCharging(prof, "clamp", "SiteCapacity_kW", 85);
     verifyGreaterThan(testCase, rc.curtailed_kWh, 0);
     verifyEqual(testCase, rc.unmet_kWh, 0);
 end

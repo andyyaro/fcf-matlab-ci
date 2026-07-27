@@ -56,38 +56,7 @@ function T = loadScenarios(csvFile, varargin)
     % "case" is a MATLAB keyword, so the CSV column "case" is imported
     % with its name preserved and then renamed to "case_label" for safe
     % dot access throughout this codebase (documented in DATA_DICTIONARY.md).
-    % The delimiter, the header line and the first data line are all SPECIFIED, not
-    % detected. This file is written by the Python producer as comma-separated with a
-    % header on line 1; there is nothing to guess, and guessing was actively wrong.
-    %
-    % The first real MathWorks run exposed it. detectImportOptions inspected a row whose
-    % free-text columns carry more spaces than the row has commas and concluded the
-    % delimiter was whitespace: it reported 51 variables instead of 22, decided the header
-    % was on line 2, and returned 119 rows instead of 120. Every required column was then
-    % "missing", which is a confusing way to be told the file was never parsed as a CSV.
-    %
-    % The canonical file is exposed to the same misdetection - 35 spaces against 21 commas
-    % on its first data row - so this is a latent defect in the loader, not a property of
-    % any one input. It could only ever have surfaced by executing the code.
-    % Delimiter is a detectImportOptions argument; VariableNamesLine and DataLines are
-    % PROPERTIES of the returned options object. Passing DataLines to the constructor
-    % raises "Unknown Parameter 'DataLines'" - which the harness run found, because the
-    % two look interchangeable in the documentation and are not.
-    opts = detectImportOptions(csvFile, ...
-        "Delimiter", ",", ...
-        "TextType", "string", ...
-        "VariableNamingRule", "preserve");
-    opts.VariableNamesLine = 1;
-    opts.DataLines = [2 Inf];
-
-    stringCols = ["scenario_id", "site_id", "site_name", "case", ...
-                  "capacity_basis", "capacity_source", ...
-                  "managed_charging_policy", "electrical_risk_level", ...
-                  "source_note"];
-    presentStringCols = intersect(stringCols, string(opts.VariableNames));
-    if ~isempty(presentStringCols)
-        opts = setvartype(opts, presentStringCols, "string");
-    end
+    opts = scenarioImportOptions(csvFile);
 
     T = readtable(csvFile, opts);
 

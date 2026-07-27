@@ -81,8 +81,7 @@ end
 function testMissingColumnErrors(testCase)
     % Drop capacity_basis entirely -> hard error on required columns.
     T = readtable(testCase.TestData.csvFile, ...
-        detectImportOptions(testCase.TestData.csvFile, ...
-            "TextType", "string", "VariableNamingRule", "preserve"));
+        scenarioImportOptions(testCase.TestData.csvFile));
     T = removevars(T, "capacity_basis");
     badCsv = fullfile(testCase.TestData.tmpDir, "missing_col.csv");
     writetable(T, badCsv);
@@ -92,8 +91,7 @@ end
 
 function testEmptyCapacityBasisErrors(testCase)
     % Blank a single capacity_basis value -> fail-closed load error.
-    opts = detectImportOptions(testCase.TestData.csvFile, ...
-        "TextType", "string", "VariableNamingRule", "preserve");
+    opts = scenarioImportOptions(testCase.TestData.csvFile);
     T = readtable(testCase.TestData.csvFile, opts);
     T.capacity_basis(3) = "";
     badCsv = fullfile(testCase.TestData.tmpDir, "blank_basis.csv");
@@ -103,8 +101,7 @@ function testEmptyCapacityBasisErrors(testCase)
 end
 
 function testBadArrivalWindowErrors(testCase)
-    opts = detectImportOptions(testCase.TestData.csvFile, ...
-        "TextType", "string", "VariableNamingRule", "preserve");
+    opts = scenarioImportOptions(testCase.TestData.csvFile);
     T = readtable(testCase.TestData.csvFile, opts);
     T.arrival_end_hr(1) = T.arrival_start_hr(1);  % zero-width window
     badCsv = fullfile(testCase.TestData.tmpDir, "bad_window.csv");
