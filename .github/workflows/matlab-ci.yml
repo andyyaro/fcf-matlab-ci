@@ -57,9 +57,47 @@ jobs:
           command: |
             fid = fopen('provenance/matlab_version.txt','w');
             fprintf(fid, 'version: %s\nrelease: %s\n', version(), version('-release'));
-            fprintf(fid, 'simulink_licensed: %d\n', license('test','Simulink'));
+            % license('test',...) answers "could a license be checked out", which is NOT
+            % "is the product installed and usable". Run 6 reported simulink_licensed: 1
+            % while buildSimulinkModel refused with "Simulink is not available" -- so this
+            % line alone is a claim the artifact cannot support. Both facts, separately.
+            fprintf(fid, 'simulink_license_test: %d\n', license('test','Simulink'));
+            fprintf(fid, 'simulink_installed: %d\n', ~isempty(ver('simulink')));
             fclose(fid);
             type('provenance/matlab_version.txt');
+
+      - name: Diagnose why the Simulink availability check refuses
+        # Run 6: Simulink was installed (mpm reported "--products=Simulink, MATLAB" and the
+        # install completed) and license('test','Simulink') returned 1, yet
+        # buildSimulinkModel errored with simulinkUnavailable. Its guard is
+        #     exist("new_system","file") ~= 2 || ~license("test","Simulink")
+        # and new_system is a Simulink BUILT-IN, which exist(...,'file') does not report as
+        # 2. If that is the cause, the Simulink layer has never been reachable on any
+        # installation, and the fix is a one-line correction to the guard.
+        #
+        # It is a hypothesis. Run 2's "obviously CRLF" hypothesis was disproven by a
+        # diagnostic exactly like this one, so ask MATLAB rather than assume again.
+        uses: matlab-actions/run-command@v2
+        with:
+          command: |
+            fprintf('exist(new_system)          = %d\n', exist('new_system'));
+            fprintf('exist(new_system,"file")   = %d\n', exist('new_system','file'));
+            fprintf('exist(new_system,"builtin")= %d\n', exist('new_system','builtin'));
+            fprintf('license test Simulink      = %d\n', license('test','Simulink'));
+            v = ver('simulink');
+            if isempty(v)
+                fprintf('ver(simulink)              = EMPTY (not installed)\n');
+            else
+                fprintf('ver(simulink)              = %s %s\n', v(1).Name, v(1).Version);
+            end
+            % The decisive test: can a model actually be created?
+            try
+                new_system('probe_model');
+                close_system('probe_model', 0);
+                fprintf('new_system probe           = OK, a model can be created\n');
+            catch err
+                fprintf('new_system probe           = FAILED: %s\n', err.message);
+            end
 
       - name: Diagnose how MATLAB actually parses the fixture
         # Run 2 failed with every required column reported missing, which means the table
