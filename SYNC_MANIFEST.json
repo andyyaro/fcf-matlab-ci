@@ -1,12 +1,12 @@
 {
-  "generated_utc": "2026-07-27T17:51:10.226475+00:00",
+  "generated_utc": "2026-07-27T19:03:31.645089+00:00",
   "source_repository": "private (source of truth)",
-  "source_commit": "c489be1a0e1b62eba7e1db9242af58f71c7afe8b",
+  "source_commit": "58f3ca59d0066d662d06fcd9e1d6afe4a6f795c9",
   "direction": "private -> public, one-directional. Never the reverse.",
   "files": {
     "data/harness_scenarios_synthetic.csv": {
       "source": "matlab/data/harness/harness_scenarios_synthetic.csv",
-      "sha256": "8e869e112e6cf201ed5ead2d8aa86d2408d2daa70a85aafb5c121cbe63b99220"
+      "sha256": "ab1f658461c561e1a1ae31df368cf88d1c4d3976a25e079d4176195b0907d5fb"
     },
     "src/buildSimulinkModel.m": {
       "source": "matlab/src/buildSimulinkModel.m",
