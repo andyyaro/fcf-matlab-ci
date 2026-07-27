@@ -61,6 +61,26 @@ jobs:
             fclose(fid);
             type('provenance/matlab_version.txt');
 
+      - name: Diagnose how MATLAB actually parses the fixture
+        # Run 2 failed with every required column reported missing, which means the table
+        # came back with variable names nothing like the header. Guessing at the cause
+        # costs a CI round trip each time; asking MATLAB what it sees costs one.
+        uses: matlab-actions/run-command@v2
+        with:
+          command: |
+            csv = fullfile(pwd,'data','harness_scenarios_synthetic.csv');
+            fid = fopen(csv,'r'); raw = fread(fid, 200, '*uint8')'; fclose(fid);
+            fprintf('first bytes: %s\n', mat2str(double(raw(1:40))));
+            fprintf('has CR: %d\n', any(raw == 13));
+            opts = detectImportOptions(csv, 'TextType','string', 'VariableNamingRule','preserve');
+            fprintf('detected %d variables\n', numel(opts.VariableNames));
+            disp(opts.VariableNames');
+            fprintf('DataLines: %s\n', mat2str(opts.DataLines));
+            fprintf('VariableNamesLine: %d\n', opts.VariableNamesLine);
+            T = readtable(csv, opts);
+            fprintf('table: %d rows x %d vars\n', height(T), width(T));
+            disp(T.Properties.VariableNames');
+
       - name: Run the unittest suite
         # continue-on-error so that a test failure still yields the golden file and the
         # logs. The job is failed explicitly at the end instead.
