@@ -1,7 +1,7 @@
 {
-  "generated_utc": "2026-07-27T17:27:09.629065+00:00",
+  "generated_utc": "2026-07-27T17:34:28.813938+00:00",
   "source_repository": "private (source of truth)",
-  "source_commit": "ab605693ade1038d33d81756c214bb5630b8051c",
+  "source_commit": "3ee4c09e6bbde631b368970fd264dbabfcac33b9",
   "direction": "private -> public, one-directional. Never the reverse.",
   "files": {
     "data/harness_scenarios_synthetic.csv": {
@@ -22,7 +22,7 @@
     },
     "src/loadScenarios.m": {
       "source": "matlab/src/loadScenarios.m",
-      "sha256": "7258c78b43440d4840a26c7c39022e8840b1b7df8530c304184f93f70c1ace5f"
+      "sha256": "d14ae6ce25956d0b3b318f06d3e1ec499f3d0e53a1f0f3cfc662f39e168cff84"
     },
     "src/makeSessionProfiles.m": {
       "source": "matlab/src/makeSessionProfiles.m",
